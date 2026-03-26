@@ -1,60 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8"><title>Saída | COMPESCAL</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Saída de Materiais | COMPESCAL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .search-res { max-height: 250px; overflow-y: auto; z-index: 100; }
+    .search-item:hover { background-color: #1e293b; cursor: pointer; }
+    /* Ajuste para inputs no iOS não dar zoom */
+    input, select { font-size: 16px !important; }
+  </style>
 </head>
-<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
-  <nav class="bg-[#161B28] p-4 flex items-center px-8 border-b border-gray-800 shadow-2xl">
-    <button onclick="window.location.href='saida-listagem.html'" class="mr-4 text-gray-400 hover:text-white transition"><i data-lucide="arrow-left"></i></button>
-    <h1 class="font-bold text-xs uppercase tracking-widest text-red-500">Nova Requisição de Materiais</h1>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen font-sans flex flex-col">
+
+  <nav class="bg-[#161B28] p-4 border-b border-gray-800 flex items-center shadow-2xl sticky top-0 z-50">
+    <button onclick="window.location.href='saida-listagem.html'" class="text-gray-400 hover:text-white flex items-center gap-2">
+      <i data-lucide="arrow-left" class="w-5 h-5"></i> 
+      <span class="text-[10px] uppercase font-black tracking-widest hide-mobile">Voltar</span>
+    </button>
+    <h1 class="ml-4 font-black text-[10px] uppercase tracking-[0.2em] text-orange-500">Requisição de Materiais</h1>
   </nav>
 
-  <main class="p-8 max-w-2xl mx-auto">
-    <form id="formSaida" class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 space-y-5 shadow-2xl">
+  <main class="p-4 md:p-8 max-w-4xl mx-auto w-full">
+    <header class="mb-6 text-center md:text-left">
+      <h2 class="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase leading-none">Baixa de Estoque</h2>
+      <p class="text-gray-500 text-[9px] uppercase tracking-[0.3em] font-bold mt-2">Saída de Insumos e Equipamentos</p>
+    </header>
+
+    <form id="formSaida" class="bg-[#161B28] p-5 md:p-8 rounded-[2rem] border border-gray-800 space-y-6 shadow-2xl">
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="relative">
+        <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">1. Localizar Item (Cód ou Descrição)</label>
+        <div class="relative">
+            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600"></i>
+            <input type="text" id="buscaProd" placeholder="Ex: COMP-0001 ou Filtro..." autocomplete="off"
+                   class="w-full pl-12 pr-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none focus:ring-1 focus:ring-orange-500 transition-all font-medium">
+        </div>
+        <div id="lista" class="hidden absolute w-full mt-2 bg-[#161B28] border border-gray-700 rounded-2xl p-2 search-res shadow-2xl"></div>
+        <input type="hidden" id="idProd" required>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#0B0F1A]/50 p-4 rounded-3xl border border-gray-800/50">
         <div class="md:col-span-1">
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">ID Produto</label>
-          <input type="text" id="idProd" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500 font-mono">
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1 ml-2">Quantidade</label>
+            <input type="number" id="qtd" step="0.01" required placeholder="0.00"
+                   class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white font-mono text-lg outline-none focus:ring-1 focus:ring-orange-500">
         </div>
         <div class="md:col-span-1">
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Qtd / Unid.</label>
-          <div class="flex gap-2">
-            <input type="number" id="qtd" min="1" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none">
-            <input type="text" id="exibirUn" disabled class="w-16 bg-gray-900 border border-gray-800 rounded-xl text-center text-xs text-gray-500 font-bold" value="---">
-          </div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1 ml-2">Unidade</label>
+            <input type="text" id="un" disabled class="w-full px-4 py-4 bg-gray-900 border border-gray-800 rounded-2xl text-center text-xs text-gray-500 font-bold uppercase" value="---">
         </div>
         <div class="md:col-span-1">
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Saldo Atual</label>
-          <input type="text" id="exibirSaldo" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-red-400 font-bold text-center">
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1 ml-2">Saldo em Estoque</label>
+          <input type="text" id="saldo" disabled class="w-full px-4 py-4 bg-gray-900 border border-gray-800 rounded-2xl text-orange-500 font-black text-center text-xl font-mono" value="0.00">
+        </div>
+      </div>
+
+      <div class="h-[1px] bg-gray-800"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Funcionário / Requisitante</label>
+          <select id="selectFunc" required class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500"></select>
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Setor de Destino</label>
+          <select id="selectSetor" required class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500"></select>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Funcionário (Requisitante)</label>
-          <select id="selectFunc" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500"></select>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Centro de Custo</label>
+          <select id="selectCC" required class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500"></select>
         </div>
         <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Setor Destino</label>
-          <select id="selectSetor" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500"></select>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Equipamento / Máquina (Opcional)</label>
+          <select id="selectMaq" class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none border-dashed"></select>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Centro de Custo</label>
-          <select id="selectCC" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500"></select>
-        </div>
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Máquina / Equipamento (Opcional)</label>
-          <select id="selectMaq" class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-gray-500 border-dashed"></select>
-        </div>
-      </div>
-
-      <button type="submit" class="w-full bg-red-600 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-[0.3em] hover:bg-red-700 transition-all mt-4 shadow-lg shadow-red-900/20">Baixar Estoque</button>
+      <button type="submit" class="w-full bg-orange-600 text-white font-black py-5 rounded-2xl uppercase text-[10px] tracking-[0.3em] active:scale-95 transition-all shadow-lg shadow-orange-900/20 mt-4">
+        Efetivar Baixa no Estoque
+      </button>
     </form>
   </main>
 
@@ -64,47 +94,100 @@
     lucide.createIcons();
 
     const banco = db.dados();
-    
-    const preencher = (id, lista, label, opcional = false) => {
-      const el = document.getElementById(id);
-      el.innerHTML = `<option value="">${opcional ? 'Nenhuma / Não se aplica' : 'Selecionar ' + label + '...'}</option>`;
-      lista.forEach(item => {
-        el.innerHTML += `<option value="${item.nome}">${item.nome} ${item.id ? '('+item.id+')' : ''}</option>`;
-      });
+    const inputBusca = document.getElementById('buscaProd');
+    const lista = document.getElementById('lista');
+    const hiddenId = document.getElementById('idProd');
+    const displayUn = document.getElementById('un');
+    const displaySaldo = document.getElementById('saldo');
+
+    // Popular os Selects com os dados do banco (Funcionalidade Mantida)
+    const carregarSelects = () => {
+        const popular = (id, dados, label) => {
+            const el = document.getElementById(id);
+            el.innerHTML = `<option value="">SELECIONAR ${label}</option>`;
+            dados.forEach(i => el.innerHTML += `<option value="${i.nome}">${i.nome}</option>`);
+        };
+        popular('selectFunc', banco.funcionarios || [], 'FUNCIONÁRIO');
+        popular('selectSetor', banco.setores || [], 'SETOR');
+        popular('selectCC', banco.centrosCusto || [], 'C. CUSTO');
+        popular('selectMaq', banco.maquinas || [], 'MÁQUINA');
     };
+    carregarSelects();
 
-    preencher('selectFunc', banco.funcionarios, 'Funcionário');
-    preencher('selectSetor', banco.setores, 'Setor');
-    preencher('selectCC', banco.centrosCusto, 'C.Custo');
-    preencher('selectMaq', banco.maquinas, 'Máquina', true); // Marcado como opcional
-
-    const inputId = document.getElementById('idProd');
-    inputId.addEventListener('input', (e) => {
-      const p = banco.produtos.find(prod => prod.id === e.target.value);
-      document.getElementById('exibirUn').value = p ? p.un : "---";
-      document.getElementById('exibirSaldo').value = p ? p.saldo : "0";
+    // Busca Dinâmica Otimizada para Mobile
+    inputBusca.addEventListener('input', e => {
+        const termo = e.target.value.toUpperCase();
+        if(termo.length < 1) { lista.classList.add('hidden'); return; }
+        
+        const filtrados = banco.produtos.filter(p => p.id.includes(termo) || p.desc.includes(termo));
+        
+        lista.innerHTML = filtrados.length ? filtrados.map(p => `
+            <div class="search-item p-4 border-b border-gray-800 rounded-xl transition-all" 
+                 onclick="window.selecionarItem('${p.id}', '${p.desc}', '${p.un}', ${p.saldo})">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] text-orange-500 font-mono font-bold">${p.id}</p>
+                        <p class="text-xs text-white font-bold uppercase">${p.desc}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] text-gray-500 uppercase font-black">Saldo</p>
+                        <p class="text-xs font-mono font-bold text-white">${p.saldo.toFixed(2)}</p>
+                    </div>
+                </div>
+            </div>`).join('') : '<p class="p-4 text-center text-xs text-gray-500">NENHUM ITEM ENCONTRADO</p>';
+        
+        lista.classList.remove('hidden');
     });
 
-    document.getElementById('formSaida').addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const payload = {
-        idProduto: inputId.value,
-        quantidade: document.getElementById('qtd').value,
-        funcionario: document.getElementById('selectFunc').value,
-        setor: document.getElementById('selectSetor').value,
-        centroCusto: document.getElementById('selectCC').value,
-        maquina: document.getElementById('selectMaq').value // Pode ir vazio
-      };
+    window.selecionarItem = (id, desc, un, saldo) => {
+        inputBusca.value = `${id} - ${desc}`;
+        hiddenId.value = id;
+        displayUn.value = un;
+        displaySaldo.value = saldo.toFixed(2);
+        lista.classList.add('hidden');
+        inputBusca.classList.add('border-orange-500');
+    };
 
-      const res = db.registrarMovimento("SAIDA", payload);
+    // Submit do Form com Validação de Saldo
+    document.getElementById('formSaida').onsubmit = (e) => {
+        e.preventDefault();
+        
+        const qtdInformada = parseFloat(document.getElementById('qtd').value);
+        const saldoDisponivel = parseFloat(displaySaldo.value);
 
-      if (res.status === "success") {
-        UI.notificar(res.message, 'success');
-        setTimeout(() => window.location.href='saida-listagem.html', 1500);
-      } else {
-        UI.notificar(res.message, 'error');
-      }
+        if (!hiddenId.value) {
+            UI.notificar("Selecione um produto da lista", "error");
+            return;
+        }
+
+        if (qtdInformada > saldoDisponivel) {
+            UI.notificar("ERRO: Saldo insuficiente!", "error");
+            return;
+        }
+
+        const payload = {
+            idProduto: hiddenId.value,
+            quantidade: qtdInformada,
+            funcionario: document.getElementById('selectFunc').value,
+            setor: document.getElementById('selectSetor').value,
+            centroCusto: document.getElementById('selectCC').value,
+            maquina: document.getElementById('selectMaq').value,
+            data: new Date().toISOString()
+        };
+
+        const res = db.registrarMovimento("SAIDA", payload);
+
+        if (res.status === "success") {
+            UI.notificar("Baixa realizada com sucesso!", "success");
+            setTimeout(() => window.location.href = 'index.html', 1500);
+        } else {
+            UI.notificar(res.message, "error");
+        }
+    };
+
+    // Fechar busca ao clicar fora
+    document.addEventListener('click', e => {
+        if(!inputBusca.contains(e.target) && !lista.contains(e.target)) lista.classList.add('hidden');
     });
   </script>
 </body>

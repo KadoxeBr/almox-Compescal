@@ -2,26 +2,31 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dashboard | COMPESCAL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .search-dropdown { max-height: 280px; overflow-y: auto; z-index: 100; }
+    .search-item:hover { background-color: #1e293b; cursor: pointer; }
+    @media (max-width: 640px) { .hide-mobile { display: none; } }
+  </style>
 </head>
-<body class="bg-[#0B0F1A] text-gray-200 min-h-screen font-sans">
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen font-sans flex flex-col">
 
-  <nav class="bg-[#161B28] border-b border-gray-800 p-4 shadow-2xl flex justify-between items-center px-8">
-    <div class="flex items-center gap-5">
+  <nav class="bg-[#161B28] border-b border-gray-800 p-4 shadow-2xl flex justify-between items-center px-4 md:px-8">
+    <div class="flex items-center gap-3 md:gap-5">
       <img src="https://raw.githubusercontent.com/KadoxeBr/Almoxarifado-Compescal/3a5e55ff48053e530e966605fda70c06e05c6acd/logoCompescal.png" 
-           alt="Logo Compescal" class="h-12 w-auto object-contain"> 
-      <div class="hidden md:block">
+           alt="Logo" class="h-10 md:h-12 w-auto"> 
+      <div class="hide-mobile">
         <h1 class="font-black text-white leading-tight uppercase italic tracking-tighter text-sm">COMPESCAL</h1>
-        <p class="text-[8px] text-emerald-500 font-black uppercase tracking-[0.3em]">Almoxarifado v1.0.2</p>
+        <p class="text-[8px] text-emerald-500 font-black uppercase tracking-[0.3em]">Almoxarifado v1.0.5</p>
       </div>
     </div>
 
-    <div class="flex items-center gap-6">
-      <div class="text-right hidden sm:block border-r border-gray-800 pr-4">
-        <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Operador Ativo</p>
+    <div class="flex items-center gap-4">
+      <div class="text-right hide-mobile border-r border-gray-800 pr-4">
+        <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Operador</p>
         <span id="userLabel" class="text-xs font-mono text-[#F37021] font-bold uppercase">ADMIN</span>
       </div>
       <button onclick="fazerLogout()" class="bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-2xl transition-all border border-red-500/20">
@@ -30,77 +35,95 @@
     </div>
   </nav>
 
-  <main class="p-8 max-w-6xl mx-auto">
-    <header class="mb-10">
-        <h2 class="text-3xl font-black text-white italic tracking-tighter uppercase">Painel Operacional</h2>
-        <p class="text-gray-500 uppercase text-[10px] tracking-[0.4em] font-bold">Gestão de Inventário e Fluxo de Materiais</p>
+  <main class="p-4 md:p-8 max-w-6xl mx-auto w-full">
+    <header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="text-center md:text-left">
+            <h2 class="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">Painel Operacional</h2>
+            <p class="text-gray-500 uppercase text-[10px] tracking-[0.4em] font-bold mt-2">Gestão de Inventário e Fluxo</p>
+        </div>
+
+        <div class="relative w-full md:w-80">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                <input type="text" id="inputBuscaRapida" placeholder="Consultar Saldo (Cód/Desc)..." 
+                       class="w-full bg-[#161B28] border border-gray-800 rounded-2xl py-4 pl-12 pr-4 text-sm outline-none focus:ring-1 focus:ring-emerald-500 transition-all text-white font-medium">
+            </div>
+            <div id="resBuscaRapida" class="hidden absolute w-full mt-2 bg-[#161B28] border border-gray-700 rounded-2xl shadow-2xl search-dropdown p-2"></div>
+        </div>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 flex items-center gap-4 shadow-lg">
-        <div class="p-4 bg-blue-500/10 rounded-xl"><i data-lucide="package" class="text-blue-500 w-6 h-6"></i></div>
-        <div><p class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Total Produtos</p><p id="countProd" class="text-2xl font-bold text-white">0</p></div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-10">
+      <div class="bg-[#161B28] p-5 rounded-2xl border border-gray-800 flex items-center gap-4">
+        <div class="p-3 bg-blue-500/10 rounded-xl"><i data-lucide="package" class="text-blue-500 w-6 h-6"></i></div>
+        <div><p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Total Itens</p><p id="countProd" class="text-xl font-bold text-white">0</p></div>
       </div>
-      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 flex items-center gap-4 shadow-lg">
-        <div class="p-4 bg-[#F37021]/10 rounded-xl"><i data-lucide="alert-triangle" class="text-[#F37021] w-6 h-6"></i></div>
-        <div><p class="text-[10px] text-[#F37021] uppercase font-black tracking-widest">Itens Críticos</p><p id="countCrit" class="text-2xl font-bold text-white">0</p></div>
+      <div class="bg-[#161B28] p-5 rounded-2xl border border-gray-800 flex items-center gap-4">
+        <div class="p-3 bg-[#F37021]/10 rounded-xl"><i data-lucide="alert-triangle" class="text-[#F37021] w-6 h-6"></i></div>
+        <div><p class="text-[9px] text-[#F37021] uppercase font-black tracking-widest">Estoque Crítico</p><p id="countCrit" class="text-xl font-bold text-white">0</p></div>
       </div>
-      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 flex items-center gap-4 shadow-lg">
-        <div class="p-4 bg-emerald-500/10 rounded-xl"><i data-lucide="activity" class="text-emerald-500 w-6 h-6"></i></div>
-        <div><p class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Movimentações</p><p id="countMov" class="text-2xl font-bold text-white">0</p></div>
+      <div class="bg-[#161B28] p-5 rounded-2xl border border-gray-800 flex items-center gap-4">
+        <div class="p-3 bg-emerald-500/10 rounded-xl"><i data-lucide="activity" class="text-emerald-500 w-6 h-6"></i></div>
+        <div><p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Movimentos</p><p id="countMov" class="text-xl font-bold text-white">0</p></div>
       </div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-      <button onclick="window.location.href='entrada.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-emerald-500/50 transition-all group shadow-xl hover:-translate-y-1">
-        <i data-lucide="arrow-down-to-dot" class="w-10 h-10 text-gray-500 group-hover:text-emerald-500 transition-colors"></i>
-        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Entradas</span>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <button onclick="window.location.href='entrada-incluir.html'" class="flex items-center md:flex-col gap-4 p-6 bg-[#161B28] rounded-[1.5rem] border border-gray-800 hover:border-emerald-500/50 transition-all active:scale-95 group">
+        <i data-lucide="arrow-down-to-dot" class="w-8 h-8 text-emerald-500"></i>
+        <span class="text-xs font-black uppercase tracking-widest">Entradas</span>
       </button>
 
-      <button onclick="window.location.href='saida-listagem.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-orange-500/50 transition-all group shadow-xl hover:-translate-y-1">
-        <i data-lucide="arrow-up-from-dot" class="w-10 h-10 text-gray-500 group-hover:text-orange-500 transition-colors"></i>
-        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Saídas</span>
+      <button onclick="window.location.href='saida-listagem.html'" class="flex items-center md:flex-col gap-4 p-6 bg-[#161B28] rounded-[1.5rem] border border-gray-800 hover:border-orange-500/50 transition-all active:scale-95 group">
+        <i data-lucide="arrow-up-from-dot" class="w-8 h-8 text-orange-500"></i>
+        <span class="text-xs font-black uppercase tracking-widest">Saídas</span>
       </button>
 
-      <button onclick="window.location.href='cadastros.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-blue-500/50 transition-all group shadow-xl hover:-translate-y-1">
-        <i data-lucide="database" class="w-10 h-10 text-gray-500 group-hover:text-blue-500 transition-colors"></i>
-        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Cadastros</span>
+      <button onclick="window.location.href='prod-incluir.html'" class="flex items-center md:flex-col gap-4 p-6 bg-[#161B28] rounded-[1.5rem] border border-gray-800 hover:border-blue-500/50 transition-all active:scale-95 group">
+        <i data-lucide="plus-circle" class="w-8 h-8 text-blue-500"></i>
+        <span class="text-xs font-black uppercase tracking-widest">Novo Item</span>
       </button>
 
-      <button onclick="window.location.href='auditoria.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-purple-500/50 transition-all group shadow-xl hover:-translate-y-1">
-        <i data-lucide="file-spreadsheet" class="w-10 h-10 text-gray-500 group-hover:text-purple-500 transition-colors"></i>
-        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Auditoria</span>
+      <button onclick="window.location.href='auditoria.html'" class="flex items-center md:flex-col gap-4 p-6 bg-[#161B28] rounded-[1.5rem] border border-gray-800 hover:border-purple-500/50 transition-all active:scale-95 group">
+        <i data-lucide="file-spreadsheet" class="w-8 h-8 text-purple-500"></i>
+        <span class="text-xs font-black uppercase tracking-widest">Relatórios</span>
       </button>
     </div>
   </main>
 
-  <footer class="mt-auto p-8 text-center border-t border-gray-900 bg-[#0B0F1A]">
-    <p class="text-gray-600 text-[9px] font-black uppercase tracking-[0.6em]">COMPESCAL - INDUSTRIA</p>
+  <footer class="mt-auto p-6 text-center border-t border-gray-900">
+    <p class="text-gray-600 text-[8px] font-black uppercase tracking-[0.5em]">COMPESCAL - INDUSTRIA</p>
   </footer>
 
   <script type="module">
     import { db } from './database.js';
-
-    // 1. Proteção de Rota
-    if (!db.verificarSessao()) {
-        window.location.href = 'login.html';
-    }
-
-    // 2. Inicialização de Ícones
+    if (!db.verificarSessao()) { window.location.href = 'login.html'; }
     lucide.createIcons();
 
-    // 3. Carregamento de Dados do Banco
     const banco = db.dados();
     document.getElementById('userLabel').innerText = sessionStorage.getItem('usuario_ativo') || 'ADMIN';
     document.getElementById('countProd').innerText = banco.produtos.length;
-    document.getElementById('countCrit').innerText = banco.produtos.filter(p => p.saldo <= p.estoqueMin).length;
+    document.getElementById('countCrit').innerText = banco.produtos.filter(p => p.saldo <= (p.estoqueMin || 0)).length;
     document.getElementById('countMov').innerText = banco.movimentacoes.length;
 
-    // 4. Lógica de Logout
-    window.fazerLogout = () => {
-        db.logout();
-        window.location.href = 'login.html';
-    };
+    // Busca Rápida
+    const input = document.getElementById('inputBuscaRapida');
+    const res = document.getElementById('resBuscaRapida');
+
+    input.addEventListener('input', (e) => {
+        const t = e.target.value.toUpperCase();
+        if (t.length < 1) { res.classList.add('hidden'); return; }
+        const filt = banco.produtos.filter(p => p.id.includes(t) || p.desc.includes(t));
+        
+        res.innerHTML = filt.length ? filt.map(p => `
+            <div class="search-item p-3 border-b border-gray-800 flex justify-between items-center rounded-xl">
+                <div><p class="text-[10px] text-emerald-500 font-mono">${p.id}</p><p class="text-xs text-white font-bold">${p.desc}</p></div>
+                <div class="text-right"><p class="text-[8px] text-gray-500 uppercase">Saldo</p><p class="text-sm font-black text-white">${p.saldo.toFixed(2)} ${p.un}</p></div>
+            </div>`).join('') : '<p class="p-4 text-center text-[10px] text-gray-500">NADA ENCONTRADO</p>';
+        res.classList.remove('hidden');
+    });
+
+    document.addEventListener('click', e => { if(!input.contains(e.target)) res.classList.add('hidden'); });
+    window.fazerLogout = () => { db.logout(); window.location.href = 'login.html'; };
   </script>
 </body>
 </html>

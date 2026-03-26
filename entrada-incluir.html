@@ -1,44 +1,79 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8"><title>Nova Entrada | COMPESCAL</title>
+  <meta charset="UTF-8">
+  <title>Nova Entrada | COMPESCAL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Estilização da lista de sugestões */
+    .search-results {
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .search-results div:hover {
+      background-color: #1e293b;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen font-sans">
   <nav class="bg-[#161B28] p-4 border-b border-gray-800 shadow-2xl">
-    <button onclick="window.location.href='entrada.html'" class="text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="arrow-left"></i> <span class="text-[10px] uppercase font-black tracking-widest">Voltar</span></button>
+    <button onclick="window.location.href='entrada.html'" class="text-gray-400 hover:text-white flex items-center gap-2">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i> 
+      <span class="text-[10px] uppercase font-black tracking-widest">Voltar</span>
+    </button>
   </nav>
 
   <main class="p-8 max-w-2xl mx-auto">
-    <form id="formEntrada" class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 space-y-6 shadow-2xl">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Produto</label>
-          <select id="idProduto" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500"></select>
+    <header class="mb-8 text-center">
+      <h2 class="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">Abastecimento</h2>
+      <p class="text-gray-500 text-[9px] uppercase tracking-[0.4em] font-bold mt-2">Entrada de Materiais no Estoque</p>
+    </header>
+
+    <form id="formEntrada" class="bg-[#161B28] p-8 rounded-[2.5rem] border border-gray-800 space-y-6 shadow-2xl relative">
+      
+      <div class="relative">
+        <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-4 tracking-widest">Localizar Produto (Código ou Nome)</label>
+        <div class="relative">
+          <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600"></i>
+          <input type="text" id="buscaProduto" placeholder="Ex: COMP-0001 ou Óleo..." autocomplete="off"
+                 class="w-full pl-12 pr-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-medium">
         </div>
+        <div id="listaProdutos" class="hidden absolute w-full mt-2 bg-[#161B28] border border-gray-700 rounded-2xl shadow-2xl z-50 search-results p-2"></div>
+        <input type="hidden" id="idProduto" required>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Fornecedor</label>
-          <select id="fornecedor" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500"></select>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-4 tracking-widest">Fornecedor</label>
+          <select id="fornecedor" required class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none focus:ring-1 focus:ring-emerald-500 appearance-none">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-4 tracking-widest">Quantidade</label>
+            <input type="number" id="quantidade" step="0.01" required placeholder="0.00"
+                   class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none focus:ring-1 focus:ring-emerald-500 font-mono">
+          </div>
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-4 tracking-widest">Vlr. Unitário</label>
+            <input type="number" id="valorUnitario" step="0.01" required placeholder="0.00"
+                   class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none focus:ring-1 focus:ring-emerald-500 font-mono">
+          </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-4">
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Quantidade</label>
-          <input type="number" id="quantidade" step="0.01" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500">
-        </div>
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Vlr. Unitário (R$)</label>
-          <input type="number" id="valorUnitario" step="0.01" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500">
-        </div>
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Total Nota (Automático)</label>
-          <input type="text" id="total" readonly class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-emerald-500 font-bold font-mono">
-        </div>
+      <div class="bg-[#0B0F1A] p-4 rounded-2xl border border-gray-800 flex justify-between items-center">
+        <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total da Operação</span>
+        <span id="totalDisplay" class="text-xl font-black text-emerald-500 font-mono">R$ 0,00</span>
       </div>
 
-      <button type="submit" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20">Finalizar Entrada</button>
+      <button type="submit" class="w-full bg-emerald-600 text-white font-black py-5 rounded-2xl uppercase text-[10px] tracking-[0.3em] hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20 active:scale-95">
+        Efetivar Entrada
+      </button>
     </form>
   </main>
 
@@ -48,32 +83,89 @@
     lucide.createIcons();
 
     const banco = db.dados();
-    const prodSel = document.getElementById('idProduto');
+    const buscaInput = document.getElementById('buscaProduto');
+    const listaSugestoes = document.getElementById('listaProdutos');
+    const idProdutoHidden = document.getElementById('idProduto');
     const fornSel = document.getElementById('fornecedor');
     const qtdInput = document.getElementById('quantidade');
     const valorInput = document.getElementById('valorUnitario');
-    const totalInput = document.getElementById('total');
+    const totalDisplay = document.getElementById('totalDisplay');
 
-    // Popular Selects
-    prodSel.innerHTML = '<option value="">Selecione o Produto...</option>' + banco.produtos.map(p => `<option value="${p.id}">${p.desc} (${p.un})</option>`).join('');
-    fornSel.innerHTML = '<option value="">Selecione o Fornecedor...</option>' + banco.fornecedores.map(f => `<option value="${f.nome}">${f.nome}</option>`).join('');
+    // Popular Fornecedores
+    fornSel.innerHTML += banco.fornecedores.map(f => `<option value="${f.nome}">${f.nome}</option>`).join('');
 
-    // Cálculo automático do total
-    [qtdInput, valorInput].forEach(el => el.addEventListener('input', () => {
-      const t = (parseFloat(qtdInput.value) || 0) * (parseFloat(valorInput.value) || 0);
-      totalInput.value = `R$ ${t.toFixed(2)}`;
-    }));
+    // LÓGICA DE BUSCA EM TEMPO REAL
+    buscaInput.addEventListener('input', (e) => {
+      const termo = e.target.value.toUpperCase();
+      if (termo.length < 1) {
+        listaSugestoes.classList.add('hidden');
+        return;
+      }
 
+      const filtrados = banco.produtos.filter(p => 
+        p.id.toUpperCase().includes(termo) || 
+        p.desc.toUpperCase().includes(termo)
+      );
+
+      if (filtrados.length > 0) {
+        listaSugestoes.innerHTML = filtrados.map(p => `
+          <div class="p-3 border-b border-gray-800 last:border-0 rounded-xl transition-colors" 
+               onclick="selecionarProduto('${p.id}', '${p.desc}', '${p.un}')">
+            <div class="text-[10px] font-mono text-emerald-500 font-bold">${p.id}</div>
+            <div class="text-sm text-white font-bold">${p.desc}</div>
+            <div class="text-[9px] text-gray-500 uppercase">Unidade: ${p.un}</div>
+          </div>
+        `).join('');
+        listaSugestoes.classList.remove('hidden');
+      } else {
+        listaSugestoes.classList.add('hidden');
+      }
+    });
+
+    // FUNÇÃO PARA SELECIONAR O ITEM DA LISTA
+    window.selecionarProduto = (id, desc, un) => {
+      buscaInput.value = `${id} - ${desc}`;
+      idProdutoHidden.value = id;
+      listaSugestoes.classList.add('hidden');
+      buscaInput.classList.add('border-emerald-500');
+    };
+
+    // Fechar lista ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!buscaInput.contains(e.target) && !listaSugestoes.contains(e.target)) {
+        listaSugestoes.classList.add('hidden');
+      }
+    });
+
+    // CÁLCULO DE TOTAL
+    const calcularTotal = () => {
+      const q = parseFloat(qtdInput.value) || 0;
+      const v = parseFloat(valorInput.value) || 0;
+      totalDisplay.innerText = (q * v).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+    };
+    [qtdInput, valorInput].forEach(el => el.addEventListener('input', calcularTotal));
+
+    // SUBMIT DO FORMULÁRIO
     document.getElementById('formEntrada').onsubmit = (e) => {
       e.preventDefault();
+      
+      if (!idProdutoHidden.value) {
+        UI.notificar("Por favor, selecione um produto válido da lista.", "error");
+        return;
+      }
+
       const res = db.registrarMovimento('ENTRADA', {
-        idProduto: prodSel.value,
-        quantidade: qtdInput.value,
-        valorUnitario: valorInput.value,
-        fornecedor: fornSel.value
+        idProduto: idProdutoHidden.value,
+        quantidade: parseFloat(qtdInput.value),
+        valorUnitario: parseFloat(valorInput.value),
+        fornecedor: fornSel.value,
+        data: new Date().toISOString()
       });
+
       UI.notificar(res.message, res.status);
-      if(res.status === "success") setTimeout(() => window.location.href='entrada.html', 1500);
+      if(res.status === "success") {
+        setTimeout(() => window.location.href='entrada.html', 1500);
+      }
     };
   </script>
 </body>
