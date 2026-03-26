@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"><title>Saída | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-4 flex items-center px-8 border-b border-gray-800 shadow-2xl">
+    <button onclick="window.location.href='saida-listagem.html'" class="mr-4 text-gray-400 hover:text-white transition"><i data-lucide="arrow-left"></i></button>
+    <h1 class="font-bold text-xs uppercase tracking-widest text-red-500">Nova Requisição de Materiais</h1>
+  </nav>
+
+  <main class="p-8 max-w-2xl mx-auto">
+    <form id="formSaida" class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 space-y-5 shadow-2xl">
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-1">
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">ID Produto</label>
+          <input type="text" id="idProd" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500 font-mono">
+        </div>
+        <div class="md:col-span-1">
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Qtd / Unid.</label>
+          <div class="flex gap-2">
+            <input type="number" id="qtd" min="1" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none">
+            <input type="text" id="exibirUn" disabled class="w-16 bg-gray-900 border border-gray-800 rounded-xl text-center text-xs text-gray-500 font-bold" value="---">
+          </div>
+        </div>
+        <div class="md:col-span-1">
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Saldo Atual</label>
+          <input type="text" id="exibirSaldo" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-red-400 font-bold text-center">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Funcionário (Requisitante)</label>
+          <select id="selectFunc" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500"></select>
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Setor Destino</label>
+          <select id="selectSetor" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500"></select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Centro de Custo</label>
+          <select id="selectCC" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-red-500"></select>
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Máquina / Equipamento (Opcional)</label>
+          <select id="selectMaq" class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-gray-500 border-dashed"></select>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-red-600 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-[0.3em] hover:bg-red-700 transition-all mt-4 shadow-lg shadow-red-900/20">Baixar Estoque</button>
+    </form>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    import { UI } from './ui.js';
+    lucide.createIcons();
+
+    const banco = db.dados();
+    
+    const preencher = (id, lista, label, opcional = false) => {
+      const el = document.getElementById(id);
+      el.innerHTML = `<option value="">${opcional ? 'Nenhuma / Não se aplica' : 'Selecionar ' + label + '...'}</option>`;
+      lista.forEach(item => {
+        el.innerHTML += `<option value="${item.nome}">${item.nome} ${item.id ? '('+item.id+')' : ''}</option>`;
+      });
+    };
+
+    preencher('selectFunc', banco.funcionarios, 'Funcionário');
+    preencher('selectSetor', banco.setores, 'Setor');
+    preencher('selectCC', banco.centrosCusto, 'C.Custo');
+    preencher('selectMaq', banco.maquinas, 'Máquina', true); // Marcado como opcional
+
+    const inputId = document.getElementById('idProd');
+    inputId.addEventListener('input', (e) => {
+      const p = banco.produtos.find(prod => prod.id === e.target.value);
+      document.getElementById('exibirUn').value = p ? p.un : "---";
+      document.getElementById('exibirSaldo').value = p ? p.saldo : "0";
+    });
+
+    document.getElementById('formSaida').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const payload = {
+        idProduto: inputId.value,
+        quantidade: document.getElementById('qtd').value,
+        funcionario: document.getElementById('selectFunc').value,
+        setor: document.getElementById('selectSetor').value,
+        centroCusto: document.getElementById('selectCC').value,
+        maquina: document.getElementById('selectMaq').value // Pode ir vazio
+      };
+
+      const res = db.registrarMovimento("SAIDA", payload);
+
+      if (res.status === "success") {
+        UI.notificar(res.message, 'success');
+        setTimeout(() => window.location.href='saida-listagem.html', 1500);
+      } else {
+        UI.notificar(res.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | COMPESCAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen flex flex-col items-center justify-center p-4">
+    
+    <div class="w-full max-w-[380px] bg-[#161B28] p-10 rounded-[2.5rem] border border-gray-800 shadow-2xl relative overflow-hidden">
+        
+        <div class="text-center mb-10">
+            <div class="mb-6 flex justify-center">
+                <img src="https://raw.githubusercontent.com/KadoxeBr/Almoxarifado-Compescal/3a5e55ff48053e530e966605fda70c06e05c6acd/logoCompescal.png" 
+                     alt="Logo COMPESCAL" 
+                     class="h-20 w-auto object-contain drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+            </div>
+            
+        
+            
+            <div class="flex items-center justify-center gap-2 mt-2">
+                <div class="h-[1px] w-8 bg-emerald-500/30"></div>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.4em]">Almoxarifado</p>
+                <div class="h-[1px] w-8 bg-emerald-500/30"></div>
+            </div>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+            <div class="space-y-1">
+                <label class="text-[9px] font-black text-gray-500 uppercase ml-4 tracking-[0.2em]">Usuário</label>
+                <div class="relative">
+                    <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600"></i>
+                    <input type="text" id="user" required autofocus 
+                        class="w-full bg-[#0B0F1A] border border-gray-800 rounded-2xl px-12 py-4 outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-mono text-sm text-white placeholder-gray-800"
+                        placeholder="ADMIN">
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-[9px] font-black text-gray-500 uppercase ml-4 tracking-[0.2em]">Senha</label>
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600"></i>
+                    <input type="password" id="pass" required 
+                        class="w-full bg-[#0B0F1A] border border-gray-800 rounded-2xl px-12 py-4 outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-mono text-sm text-white placeholder-gray-800"
+                        placeholder="••••">
+                </div>
+            </div>
+
+            <button type="submit" id="btnAcessar" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-5 rounded-2xl uppercase text-[10px] tracking-[0.3em] transition-all shadow-lg shadow-emerald-900/40 mt-4 active:scale-95">
+                Acessar Unidade
+            </button>
+        </form>
+
+        <div class="mt-12 pt-6 border-t border-gray-800/50 text-center">
+            <p class="text-[9px] font-mono text-emerald-500/40 font-bold uppercase tracking-widest italic">v1.0.2-STABLE</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './database.js';
+
+        // Inicializa ícones
+        lucide.createIcons();
+
+        const form = document.getElementById('loginForm');
+        const btn = document.getElementById('btnAcessar');
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            // Efeito visual de carregamento
+            btn.innerText = "VALIDANDO...";
+            btn.disabled = true;
+
+            const usuarioInput = document.getElementById('user').value;
+            const senhaInput = document.getElementById('pass').value;
+
+            try {
+                // Chama a função de login do database.js
+                const resultado = db.login(usuarioInput, senhaInput);
+                
+                if(resultado && resultado.status === "success") {
+                    console.log("Login autorizado. Redirecionando para index.html...");
+                    // Pequeno delay para garantir que o sessionStorage seja gravado
+                    setTimeout(() => {
+                        window.location.replace("index.html");
+                    }, 500);
+                } else {
+                    throw new Error(resultado ? resultado.message : "Erro desconhecido");
+                }
+            } catch (error) {
+                alert("ACESSO NEGADO: " + error.message);
+                btn.innerText = "Acessar Unidade";
+                btn.disabled = false;
+                document.getElementById('pass').value = "";
+                document.getElementById('pass').focus();
+            }
+        };
+    </script>
+</body>
+</html>

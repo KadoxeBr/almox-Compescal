@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatórios | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-3 flex items-center px-8 border-b border-gray-800 shadow-2xl">
+    <button onclick="window.location.href='index.html'" class="mr-4 text-gray-400 hover:text-white transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+    <h1 class="font-bold text-[10px] uppercase tracking-widest text-green-500">Relatórios de Movimentação</h1>
+  </nav>
+
+  <main class="p-6 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+        <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Movimentação por Tipo</h2>
+        <canvas id="chartTipo" class="max-h-72"></canvas>
+      </div>
+
+      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+        <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Movimentação por Dia</h2>
+        <canvas id="chartDia" class="max-h-72"></canvas>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+        <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Top Produtos Mais Movimentados</h2>
+        <div id="topProdutos" class="space-y-3">
+          <p class="text-gray-500 text-center py-4">Carregando...</p>
+        </div>
+      </div>
+
+      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+        <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Movimentação por Setor</h2>
+        <canvas id="chartSetor" class="max-h-72"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+      <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Resumo de Operações</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-700">
+              <th class="text-left py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Período</th>
+              <th class="text-center py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Entradas</th>
+              <th class="text-center py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Saídas</th>
+              <th class="text-center py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Total</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaResumo">
+            <tr>
+              <td colspan="4" class="text-center py-8 text-gray-500">Carregando...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    lucide.createIcons();
+
+    const banco = db.dados();
+    const movimentos = banco.movimentacoes || [];
+
+    if (movimentos.length === 0) {
+      document.getElementById('topProdutos').innerHTML = '<p class="text-gray-500 text-center py-4">Nenhum movimento registrado</p>';
+      return;
+    }
+
+    const entradas = movimentos.filter(m => m.tipo === 'ENTRADA').length;
+    const saidas = movimentos.filter(m => m.tipo === 'SAIDA').length;
+
+    const ctx1 = document.getElementById('chartTipo').getContext('2d');
+    new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: ['Entradas', 'Saídas'],
+        datasets: [{
+          data: [entradas, saidas],
+          backgroundColor: ['#4ade80', '#ef4444'],
+          borderColor: ['#22c55e', '#dc2626'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { labels: { color: '#d1d5db', font: { size: 12 } } }
+        }
+      }
+    });
+
+    const movimentosPorDia = {};
+    movimentos.forEach(m => {
+      const data = m.data.split(' ')[0];
+      if (!movimentosPorDia[data]) movimentosPorDia[data] = 0;
+      movimentosPorDia[data]++;
+    });
+
+    const diasOrdenados = Object.keys(movimentosPorDia).sort();
+    const ctx2 = document.getElementById('chartDia').getContext('2d');
+    new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: diasOrdenados,
+        datasets: [{
+          label: 'Movimentações',
+          data: diasOrdenados.map(d => movimentosPorDia[d]),
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderWidth: 2,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { labels: { color: '#d1d5db', font: { size: 12 } } } },
+        scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }, x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } } }
+      }
+    });
+
+    const produtosContagem = {};
+    movimentos.forEach(m => {
+      if (!produtosContagem[m.idProduto]) produtosContagem[m.idProduto] = { qtd: 0, entrada: 0, saida: 0 };
+      produtosContagem[m.idProduto].qtd += m.quantidade;
+      if (m.tipo === 'ENTRADA') produtosContagem[m.idProduto].entrada += m.quantidade;
+      else produtosContagem[m.idProduto].saida += m.quantidade;
+    });
+
+    const topProd = Object.entries(produtosContagem)
+      .sort((a, b) => b[1].qtd - a[1].qtd)
+      .slice(0, 5);
+
+    document.getElementById('topProdutos').innerHTML = topProd.map(([prod, dados]) => `
+      <div class="flex justify-between items-center p-3 bg-[#0B0F1A] rounded-lg border border-gray-700">
+        <span class="font-mono font-bold text-white">${prod}</span>
+        <div class="flex gap-4 text-sm">
+          <span class="text-green-400">Ent: ${dados.entrada}</span>
+          <span class="text-red-400">Saí: ${dados.saida}</span>
+        </div>
+      </div>
+    `).join('');
+
+    const setoresContagem = {};
+    movimentos.forEach(m => {
+      if (!setoresContagem[m.setor]) setoresContagem[m.setor] = 0;
+      setoresContagem[m.setor]++;
+    });
+
+    const setoresLabels = Object.keys(setoresContagem);
+    const setoresDados = Object.values(setoresContagem);
+    const cores = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+    const ctx3 = document.getElementById('chartSetor').getContext('2d');
+    new Chart(ctx3, {
+      type: 'bar',
+      data: {
+        labels: setoresLabels,
+        datasets: [{
+          label: 'Movimentações',
+          data: setoresDados,
+          backgroundColor: cores.slice(0, setoresLabels.length),
+          borderColor: cores.slice(0, setoresLabels.length),
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { labels: { color: '#d1d5db', font: { size: 12 } } } },
+        scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }, x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } } }
+      }
+    });
+
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    const hojeCount = movimentos.filter(m => m.data.startsWith(hoje)).length;
+    const hojeEntrada = movimentos.filter(m => m.data.startsWith(hoje) && m.tipo === 'ENTRADA').length;
+    const hojeSaida = movimentos.filter(m => m.data.startsWith(hoje) && m.tipo === 'SAIDA').length;
+
+    document.getElementById('tabelaResumo').innerHTML = `
+      <tr class="border-b border-gray-700 hover:bg-[#1A1F2E]">
+        <td class="py-3 px-4 text-gray-300">Hoje (${hoje})</td>
+        <td class="py-3 px-4 text-center text-green-400 font-bold">${hojeEntrada}</td>
+        <td class="py-3 px-4 text-center text-red-400 font-bold">${hojeSaida}</td>
+        <td class="py-3 px-4 text-center text-blue-400 font-bold">${hojeCount}</td>
+      </tr>
+      <tr class="border-b border-gray-700 hover:bg-[#1A1F2E]">
+        <td class="py-3 px-4 text-gray-300">Total Geral</td>
+        <td class="py-3 px-4 text-center text-green-400 font-bold">${entradas}</td>
+        <td class="py-3 px-4 text-center text-red-400 font-bold">${saidas}</td>
+        <td class="py-3 px-4 text-center text-blue-400 font-bold">${movimentos.length}</td>
+      </tr>
+    `;
+  </script>
+</body>
+</html>

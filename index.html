@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen font-sans">
+
+  <nav class="bg-[#161B28] border-b border-gray-800 p-4 shadow-2xl flex justify-between items-center px-8">
+    <div class="flex items-center gap-5">
+      <img src="https://raw.githubusercontent.com/KadoxeBr/Almoxarifado-Compescal/3a5e55ff48053e530e966605fda70c06e05c6acd/logoCompescal.png" 
+           alt="Logo Compescal" class="h-12 w-auto object-contain"> 
+      <div class="hidden md:block">
+        <h1 class="font-black text-white leading-tight uppercase italic tracking-tighter text-sm">COMPESCAL</h1>
+        <p class="text-[8px] text-emerald-500 font-black uppercase tracking-[0.3em]">Almoxarifado v1.0.2</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-6">
+      <div class="text-right hidden sm:block border-r border-gray-800 pr-4">
+        <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Operador Ativo</p>
+        <span id="userLabel" class="text-xs font-mono text-[#F37021] font-bold uppercase">ADMIN</span>
+      </div>
+      <button onclick="fazerLogout()" class="bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-2xl transition-all border border-red-500/20">
+        <i data-lucide="power" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main class="p-8 max-w-6xl mx-auto">
+    <header class="mb-10">
+        <h2 class="text-3xl font-black text-white italic tracking-tighter uppercase">Painel Operacional</h2>
+        <p class="text-gray-500 uppercase text-[10px] tracking-[0.4em] font-bold">Gestão de Inventário e Fluxo de Materiais</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 flex items-center gap-4 shadow-lg">
+        <div class="p-4 bg-blue-500/10 rounded-xl"><i data-lucide="package" class="text-blue-500 w-6 h-6"></i></div>
+        <div><p class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Total Produtos</p><p id="countProd" class="text-2xl font-bold text-white">0</p></div>
+      </div>
+      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 flex items-center gap-4 shadow-lg">
+        <div class="p-4 bg-[#F37021]/10 rounded-xl"><i data-lucide="alert-triangle" class="text-[#F37021] w-6 h-6"></i></div>
+        <div><p class="text-[10px] text-[#F37021] uppercase font-black tracking-widest">Itens Críticos</p><p id="countCrit" class="text-2xl font-bold text-white">0</p></div>
+      </div>
+      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 flex items-center gap-4 shadow-lg">
+        <div class="p-4 bg-emerald-500/10 rounded-xl"><i data-lucide="activity" class="text-emerald-500 w-6 h-6"></i></div>
+        <div><p class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Movimentações</p><p id="countMov" class="text-2xl font-bold text-white">0</p></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <button onclick="window.location.href='entrada.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-emerald-500/50 transition-all group shadow-xl hover:-translate-y-1">
+        <i data-lucide="arrow-down-to-dot" class="w-10 h-10 text-gray-500 group-hover:text-emerald-500 transition-colors"></i>
+        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Entradas</span>
+      </button>
+
+      <button onclick="window.location.href='saida-listagem.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-orange-500/50 transition-all group shadow-xl hover:-translate-y-1">
+        <i data-lucide="arrow-up-from-dot" class="w-10 h-10 text-gray-500 group-hover:text-orange-500 transition-colors"></i>
+        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Saídas</span>
+      </button>
+
+      <button onclick="window.location.href='cadastros.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-blue-500/50 transition-all group shadow-xl hover:-translate-y-1">
+        <i data-lucide="database" class="w-10 h-10 text-gray-500 group-hover:text-blue-500 transition-colors"></i>
+        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Cadastros</span>
+      </button>
+
+      <button onclick="window.location.href='auditoria.html'" class="flex flex-col items-center gap-4 p-8 bg-[#161B28] rounded-[2rem] border border-gray-800 hover:border-purple-500/50 transition-all group shadow-xl hover:-translate-y-1">
+        <i data-lucide="file-spreadsheet" class="w-10 h-10 text-gray-500 group-hover:text-purple-500 transition-colors"></i>
+        <span class="text-xs font-black uppercase text-gray-400 group-hover:text-white tracking-widest">Auditoria</span>
+      </button>
+    </div>
+  </main>
+
+  <footer class="mt-auto p-8 text-center border-t border-gray-900 bg-[#0B0F1A]">
+    <p class="text-gray-600 text-[9px] font-black uppercase tracking-[0.6em]">COMPESCAL - Engenharia e Logística</p>
+  </footer>
+
+  <script type="module">
+    import { db } from './database.js';
+
+    // 1. Proteção de Rota
+    if (!db.verificarSessao()) {
+        window.location.href = 'login.html';
+    }
+
+    // 2. Inicialização de Ícones
+    lucide.createIcons();
+
+    // 3. Carregamento de Dados do Banco
+    const banco = db.dados();
+    document.getElementById('userLabel').innerText = sessionStorage.getItem('usuario_ativo') || 'ADMIN';
+    document.getElementById('countProd').innerText = banco.produtos.length;
+    document.getElementById('countCrit').innerText = banco.produtos.filter(p => p.saldo <= p.estoqueMin).length;
+    document.getElementById('countMov').innerText = banco.movimentacoes.length;
+
+    // 4. Lógica de Logout
+    window.fazerLogout = () => {
+        db.logout();
+        window.location.href = 'login.html';
+    };
+  </script>
+</body>
+</html>

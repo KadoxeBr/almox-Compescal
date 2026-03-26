@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"><title>Excluir Funcionário | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-4 border-b border-gray-800">
+    <button onclick="window.location.href='cad-funcionario.html'" class="text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="arrow-left"></i> <span class="text-[10px] uppercase font-black tracking-widest">Voltar</span></button>
+  </nav>
+
+  <main class="p-8 max-w-2xl mx-auto">
+    <div class="bg-[#161B28] rounded-3xl border border-gray-800 overflow-hidden shadow-2xl">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-[#0B0F1A] text-[9px] uppercase text-gray-500 font-black">
+          <tr><th class="px-6 py-4">Matrícula</th><th class="px-6 py-4">Nome</th><th class="px-6 py-4 text-right">Ação</th></tr>
+        </thead>
+        <tbody id="lista" class="divide-y divide-gray-800"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    import { UI } from './ui.js';
+    lucide.createIcons();
+
+    const render = () => {
+      const dados = db.dados().funcionarios || [];
+      document.getElementById('lista').innerHTML = dados.map(f => `
+        <tr class="hover:bg-red-500/5">
+          <td class="px-6 py-4 font-mono text-xs text-gray-500">${f.id}</td>
+          <td class="px-6 py-4 font-bold uppercase">${f.nome}</td>
+          <td class="px-6 py-4 text-right">
+            <button onclick="confirmar('${f.id}')" class="text-red-500 p-2 hover:bg-red-500/20 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    };
+
+    window.confirmar = (id) => {
+      if(confirm(`Remover funcionário ${id}?`)) {
+        const res = db.excluirRegistro('funcionarios', id);
+        UI.notificar(res.message, res.status);
+        render();
+      }
+    };
+    render();
+  </script>
+</body>
+</html>

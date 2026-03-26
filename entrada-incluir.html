@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"><title>Nova Entrada | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-4 border-b border-gray-800 shadow-2xl">
+    <button onclick="window.location.href='entrada.html'" class="text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="arrow-left"></i> <span class="text-[10px] uppercase font-black tracking-widest">Voltar</span></button>
+  </nav>
+
+  <main class="p-8 max-w-2xl mx-auto">
+    <form id="formEntrada" class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 space-y-6 shadow-2xl">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Produto</label>
+          <select id="idProduto" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500"></select>
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Fornecedor</label>
+          <select id="fornecedor" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500"></select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Quantidade</label>
+          <input type="number" id="quantidade" step="0.01" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Vlr. Unitário (R$)</label>
+          <input type="number" id="valorUnitario" step="0.01" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Total Nota (Automático)</label>
+          <input type="text" id="total" readonly class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-emerald-500 font-bold font-mono">
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20">Finalizar Entrada</button>
+    </form>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    import { UI } from './ui.js';
+    lucide.createIcons();
+
+    const banco = db.dados();
+    const prodSel = document.getElementById('idProduto');
+    const fornSel = document.getElementById('fornecedor');
+    const qtdInput = document.getElementById('quantidade');
+    const valorInput = document.getElementById('valorUnitario');
+    const totalInput = document.getElementById('total');
+
+    // Popular Selects
+    prodSel.innerHTML = '<option value="">Selecione o Produto...</option>' + banco.produtos.map(p => `<option value="${p.id}">${p.desc} (${p.un})</option>`).join('');
+    fornSel.innerHTML = '<option value="">Selecione o Fornecedor...</option>' + banco.fornecedores.map(f => `<option value="${f.nome}">${f.nome}</option>`).join('');
+
+    // Cálculo automático do total
+    [qtdInput, valorInput].forEach(el => el.addEventListener('input', () => {
+      const t = (parseFloat(qtdInput.value) || 0) * (parseFloat(valorInput.value) || 0);
+      totalInput.value = `R$ ${t.toFixed(2)}`;
+    }));
+
+    document.getElementById('formEntrada').onsubmit = (e) => {
+      e.preventDefault();
+      const res = db.registrarMovimento('ENTRADA', {
+        idProduto: prodSel.value,
+        quantidade: qtdInput.value,
+        valorUnitario: valorInput.value,
+        fornecedor: fornSel.value
+      });
+      UI.notificar(res.message, res.status);
+      if(res.status === "success") setTimeout(() => window.location.href='entrada.html', 1500);
+    };
+  </script>
+</body>
+</html>

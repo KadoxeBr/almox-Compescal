@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"><title>Corrigir Entrada | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-4 border-b border-gray-800">
+    <button onclick="window.location.href='entrada.html'" class="text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="arrow-left"></i> <span class="text-[10px] uppercase font-black tracking-widest">Voltar</span></button>
+  </nav>
+
+  <main class="p-8 max-w-2xl mx-auto">
+    <div class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 shadow-2xl space-y-6">
+      <div>
+        <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Localizar Lançamento (ID da Movimentação)</label>
+        <select id="buscaMov" class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-blue-500"></select>
+      </div>
+
+      <form id="formAlterar" class="space-y-4 opacity-30 pointer-events-none transition-all">
+        <input type="hidden" id="idMov">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Produto (Não alterável)</label>
+            <input type="text" id="prodNome" readonly class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500 font-mono text-xs">
+          </div>
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Fornecedor</label>
+            <select id="fornecedor" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-blue-500"></select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Nova Quantidade</label>
+            <input type="number" id="quantidade" step="0.01" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-blue-500 font-bold">
+          </div>
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Novo Valor Unitário</label>
+            <input type="number" id="valorUnitario" step="0.01" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-blue-500">
+          </div>
+        </div>
+        
+        <div class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+           <p class="text-[10px] text-blue-400 leading-tight italic">Ao salvar, o sistema recalculará o saldo do produto baseado na diferença entre a quantidade antiga e a nova.</p>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-widest hover:bg-blue-700 transition-all">Salvar Correção</button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    import { UI } from './ui.js';
+    lucide.createIcons();
+
+    const banco = db.dados();
+    const select = document.getElementById('buscaMov');
+    const form = document.getElementById('formAlterar');
+
+    // Filtrar apenas entradas
+    const entradas = (banco.movimentacoes || []).filter(m => m.tipo === 'ENTRADA');
+    select.innerHTML = '<option value="">Selecione o lançamento...</option>' + 
+      entradas.map(m => `<option value="${m.id}">${m.data} - ${m.idProduto} (${m.quantidade} un)</option>`).join('');
+
+    // Popular fornecedores
+    document.getElementById('fornecedor').innerHTML = banco.fornecedores.map(f => `<option value="${f.nome}">${f.nome}</option>`).join('');
+
+    select.onchange = (e) => {
+      const mov = entradas.find(m => m.id === parseInt(e.target.value));
+      if(mov) {
+        form.classList.remove('opacity-30', 'pointer-events-none');
+        document.getElementById('idMov').value = mov.id;
+        document.getElementById('prodNome').value = mov.idProduto;
+        document.getElementById('quantidade').value = mov.quantidade;
+        document.getElementById('valorUnitario').value = mov.valorUnitario;
+        document.getElementById('fornecedor').value = mov.fornecedor;
+      }
+    };
+
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const res = db.corrigirMovimento({
+        id: parseInt(document.getElementById('idMov').value),
+        quantidade: parseFloat(document.getElementById('quantidade').value),
+        valorUnitario: parseFloat(document.getElementById('valorUnitario').value),
+        fornecedor: document.getElementById('fornecedor').value
+      });
+      UI.notificar(res.message, res.status);
+      if(res.status === "success") setTimeout(() => window.location.href='entrada.html', 1500);
+    };
+  </script>
+</body>
+</html>

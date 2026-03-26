@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"><title>Central de Cadastros | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] border-b border-gray-800 p-4 flex items-center px-8 shadow-2xl">
+    <button onclick="window.location.href='index.html'" class="mr-4 text-gray-400 hover:text-white transition">
+      <i data-lucide="arrow-left"></i>
+    </button>
+    <h1 class="font-bold text-xs uppercase tracking-[0.3em]">Painel de <span class="text-[#F37021]">Cadastros Base</span></h1>
+  </nav>
+
+  <main class="p-8 max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <button onclick="window.location.href='cad-produto.html'" class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 hover:border-blue-500 transition-all group flex flex-col items-center gap-4">
+        <div class="p-4 bg-[#0B0F1A] rounded-xl group-hover:bg-blue-500/20"><i data-lucide="package" class="w-8 h-8 text-blue-500"></i></div>
+        <span class="font-bold text-[10px] uppercase tracking-widest">Produtos</span>
+      </button>
+
+      <button onclick="window.location.href='cad-fornecedor.html'" class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 hover:border-orange-500 transition-all group flex flex-col items-center gap-4">
+        <div class="p-4 bg-[#0B0F1A] rounded-xl group-hover:bg-orange-500/20"><i data-lucide="truck" class="w-8 h-8 text-orange-500"></i></div>
+        <span class="font-bold text-[10px] uppercase tracking-widest">Fornecedores</span>
+      </button>
+
+      <button onclick="window.location.href='cad-funcionario.html'" class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 hover:border-green-500 transition-all group flex flex-col items-center gap-4">
+        <div class="p-4 bg-[#0B0F1A] rounded-xl group-hover:bg-green-500/20"><i data-lucide="users" class="w-8 h-8 text-green-500"></i></div>
+        <span class="font-bold text-[10px] uppercase tracking-widest">Funcionários</span>
+      </button>
+
+      <button onclick="window.location.href='cad-centrocusto.html'" class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 hover:border-purple-500 transition-all group flex flex-col items-center gap-4">
+        <div class="p-4 bg-[#0B0F1A] rounded-xl group-hover:bg-purple-500/20"><i data-lucide="piggy-bank" class="w-8 h-8 text-purple-500"></i></div>
+        <span class="font-bold text-[10px] uppercase tracking-widest">Centros de Custo</span>
+      </button>
+
+      <button onclick="window.location.href='cad-setores.html'" class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 hover:border-indigo-500 transition-all group flex flex-col items-center gap-4">
+        <div class="p-4 bg-[#0B0F1A] rounded-xl group-hover:bg-indigo-500/20"><i data-lucide="layers" class="w-8 h-8 text-indigo-500"></i></div>
+        <span class="font-bold text-[10px] uppercase tracking-widest">Setores</span>
+      </button>
+
+      <button onclick="window.location.href='cad-maquinas.html'" class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 hover:border-red-500 transition-all group flex flex-col items-center gap-4">
+        <div class="p-4 bg-[#0B0F1A] rounded-xl group-hover:bg-red-500/20"><i data-lucide="cpu" class="w-8 h-8 text-red-500"></i></div>
+        <span class="font-bold text-[10px] uppercase tracking-widest">Máquinas</span>
+      </button>
+
+    </div>
+  </main>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

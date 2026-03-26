@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Excluir Saída | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-4 flex items-center px-8 border-b border-gray-800 shadow-2xl">
+    <button onclick="window.location.href='saida-listagem.html'" class="mr-4 text-gray-400 hover:text-white transition"><i data-lucide="arrow-left"></i></button>
+    <h1 class="font-bold text-xs uppercase tracking-widest text-red-500">Excluir Saída de Material</h1>
+  </nav>
+
+  <main class="p-8 max-w-2xl mx-auto">
+    <div class="bg-red-500/10 border border-red-500/30 rounded-3xl p-8 mb-6">
+      <div class="flex gap-4 mb-4">
+        <i data-lucide="alert-triangle" class="text-red-500 w-8 h-8 flex-shrink-0"></i>
+        <div>
+          <h2 class="font-black text-red-500 uppercase text-sm mb-2">Atenção!</h2>
+          <p class="text-gray-300">Ao excluir esta saída, o estoque será restaurado. Esta ação não pode ser desfeita.</p>
+        </div>
+      </div>
+    </div>
+
+    <form id="formExcluirSaida" class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 space-y-5 shadow-2xl">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-1">
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">ID Produto</label>
+          <input type="text" id="idProd" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500 font-mono">
+        </div>
+        <div class="md:col-span-1">
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Quantidade</label>
+          <input type="text" id="qtd" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500 font-bold">
+        </div>
+        <div class="md:col-span-1">
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Unidade</label>
+          <input type="text" id="exibirUn" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500 text-center">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Funcionário</label>
+          <input type="text" id="selectFunc" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500">
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Setor</label>
+          <input type="text" id="selectSetor" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Centro de Custo</label>
+          <input type="text" id="selectCC" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500">
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Data da Saída</label>
+          <input type="text" id="dataSaida" disabled class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500">
+        </div>
+      </div>
+
+      <div class="flex gap-4 mt-8">
+        <button type="button" onclick="window.location.href='saida-listagem.html'" class="flex-1 bg-gray-700 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-[0.3em] hover:bg-gray-600 transition-all">Cancelar</button>
+        <button type="submit" class="flex-1 bg-red-600 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-[0.3em] hover:bg-red-700 transition-all shadow-lg shadow-red-900/20">Confirmar Exclusão</button>
+      </div>
+    </form>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    import { UI } from './ui.js';
+    lucide.createIcons();
+
+    const saidaId = sessionStorage.getItem('saida_id');
+    if (!saidaId) {
+      window.location.href = 'saida-listagem.html';
+    }
+
+    const banco = db.dados();
+    const saida = banco.movimentacoes.find(m => m.id == saidaId && m.tipo === 'SAIDA');
+
+    if (!saida) {
+      UI.notificar('Saída não encontrada!', 'error');
+      setTimeout(() => window.location.href = 'saida-listagem.html', 1500);
+    }
+
+    const produto = banco.produtos.find(p => p.id === saida.idProduto);
+
+    document.getElementById('idProd').value = saida.idProduto;
+    document.getElementById('qtd').value = saida.quantidade;
+    document.getElementById('exibirUn').value = produto ? produto.un : "---";
+    document.getElementById('selectFunc').value = saida.funcionario;
+    document.getElementById('selectSetor').value = saida.setor;
+    document.getElementById('selectCC').value = saida.centroCusto;
+    document.getElementById('dataSaida').value = saida.data;
+
+    document.getElementById('formExcluirSaida').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const resultado = db.excluirMovimento(saidaId);
+
+      if (resultado.status === 'success') {
+        UI.notificar('Saída excluída com sucesso! Estoque restaurado.', 'success');
+        setTimeout(() => window.location.href = 'saida-listagem.html', 1500);
+      } else {
+        UI.notificar(resultado.message, 'error');
+      }
+    });
+
+    sessionStorage.removeItem('saida_id');
+  </script>
+</body>
+</html>

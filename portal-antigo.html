@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | COMPESCAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen font-sans flex flex-col">
+
+    <nav class="bg-[#161B28] p-4 border-b border-gray-800 flex justify-between items-center px-8 shadow-2xl">
+        <div class="flex items-center gap-4">
+            <img src="https://raw.githubusercontent.com/KadoxeBr/Almoxarifado-Compescal/3a5e55ff48053e530e966605fda70c06e05c6acd/logoCompescal.png" 
+                 alt="Logo" class="h-10 w-auto object-contain">
+            <div class="h-8 w-[1px] bg-gray-800 mx-2"></div>
+            <div>
+                <h1 class="font-black text-white leading-tight uppercase italic tracking-tighter text-base">COMPESCAL</h1>
+                <p class="text-[8px] text-emerald-500 font-black uppercase tracking-[0.3em]">Unidade de Gestão v1.0.2</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="text-right hidden sm:block">
+                <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Status do Sistema</p>
+                <div class="flex items-center gap-2 justify-end">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <p class="text-[10px] font-mono text-white font-bold uppercase">Online / Admin</p>
+                </div>
+            </div>
+            <button onclick="db.logout()" class="bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-2xl transition-all border border-red-500/20">
+                <i data-lucide="power" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="p-10 max-w-6xl mx-auto w-full flex-grow">
+        <header class="mb-12 text-center">
+            <h2 class="text-5xl font-black text-white italic tracking-tighter uppercase">Painel Operacional</h2>
+            <p class="text-gray-500 mt-3 uppercase text-[10px] tracking-[0.4em] font-bold">Selecione uma unidade de trabalho abaixo</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div onclick="window.location.href='cadastros.html'" class="group cursor-pointer bg-[#161B28] p-10 rounded-[2.5rem] border border-gray-800 hover:border-blue-500/30 transition-all shadow-xl text-center">
+                <div class="bg-blue-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition duration-500">
+                    <i data-lucide="database" class="text-blue-500 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-black text-white uppercase italic">Cadastros Base</h3>
+                <p class="text-gray-500 text-xs mt-3 leading-relaxed">Gestão de itens, parceiros e ativos fixos da unidade.</p>
+            </div>
+
+            <div onclick="window.location.href='mov-entrada.html'" class="group cursor-pointer bg-[#161B28] p-10 rounded-[2.5rem] border-2 border-emerald-500/50 hover:border-emerald-500 transition-all shadow-xl text-center relative overflow-hidden">
+                <div class="bg-emerald-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition duration-500">
+                    <i data-lucide="box" class="text-emerald-500 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-black text-white uppercase italic">Entradas</h3>
+                <p class="text-gray-500 text-xs mt-3 leading-relaxed">Abastecimento de estoque, custos e entrada de materiais.</p>
+            </div>
+
+            <div onclick="window.location.href='mov-saida.html'" class="group cursor-pointer bg-[#161B28] p-10 rounded-[2.5rem] border border-gray-800 hover:border-orange-500/30 transition-all shadow-xl text-center">
+                <div class="bg-orange-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition duration-500">
+                    <i data-lucide="truck" class="text-orange-500 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-black text-white uppercase italic">Saídas</h3>
+                <p class="text-gray-500 text-xs mt-3 leading-relaxed">Baixas de insumos para produção e centros de custo.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="p-8 text-center border-t border-gray-900 bg-[#0B0F1A]">
+        <p class="text-gray-600 text-[9px] font-black uppercase tracking-[0.6em]">COMPESCAL - Engenharia e Logística</p>
+    </footer>
+
+    <script type="module">
+        import { db } from './database.js';
+        
+        // Proteção de Rota
+        if (!db.verificarSessao()) {
+            window.location.href = 'login.html';
+        }
+
+        // Torna o db global para os botões de logout
+        window.db = db;
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

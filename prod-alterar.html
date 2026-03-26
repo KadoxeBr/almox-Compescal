@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"><title>Alterar Produto | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-4 border-b border-gray-800">
+    <button onclick="window.location.href='cad-produto.html'" class="text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="arrow-left"></i> <span class="text-[10px] uppercase font-black tracking-widest">Voltar</span></button>
+  </nav>
+
+  <main class="p-8 max-w-xl mx-auto">
+    <div class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 shadow-2xl space-y-6">
+      <div>
+        <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Buscar Produto</label>
+        <select id="busca" class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-yellow-500"></select>
+      </div>
+
+      <form id="formAlterar" class="space-y-4 opacity-30 pointer-events-none transition-all">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Código (ID)</label>
+            <input type="text" id="id" readonly class="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-500 font-mono">
+          </div>
+          <div>
+            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Unidade</label>
+            <input type="text" id="un" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-yellow-500 uppercase">
+          </div>
+        </div>
+        <div>
+          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Descrição</label>
+          <input type="text" id="desc" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-yellow-500">
+        </div>
+        <button type="submit" class="w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase text-[10px] tracking-widest hover:bg-yellow-500 transition-all">Atualizar Dados</button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    import { UI } from './ui.js';
+    lucide.createIcons();
+
+    const selectBusca = document.getElementById('busca');
+    const form = document.getElementById('formAlterar');
+    const banco = db.dados();
+
+    selectBusca.innerHTML = '<option value="">Escolha um item...</option>' + 
+      banco.produtos.map(p => `<option value="${p.id}">${p.id} - ${p.desc}</option>`).join('');
+
+    selectBusca.onchange = (e) => {
+      const p = banco.produtos.find(item => item.id === e.target.value);
+      if(p) {
+        form.classList.remove('opacity-30', 'pointer-events-none');
+        document.getElementById('id').value = p.id;
+        document.getElementById('desc').value = p.desc;
+        document.getElementById('un').value = p.un;
+      }
+    };
+
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const res = db.adicionarRegistro('produtos', {
+        id: document.getElementById('id').value,
+        desc: document.getElementById('desc').value,
+        un: document.getElementById('un').value.toUpperCase()
+      });
+      UI.notificar(res.message, res.status);
+      if(res.status === "success") setTimeout(() => window.location.href='cad-produto.html', 1500);
+    };
+  </script>
+</body>
+</html>

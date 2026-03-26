@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"><title>Nova Máquina | COMPESCAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
+  <nav class="bg-[#161B28] p-4 border-b border-gray-800 shadow-2xl">
+    <button onclick="window.location.href='cad-maquinas.html'" class="text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="arrow-left"></i> <span class="text-[10px] uppercase font-black tracking-widest">Voltar</span></button>
+  </nav>
+
+  <main class="p-8 max-w-xl mx-auto">
+    <form id="formMaq" class="bg-[#161B28] p-8 rounded-3xl border border-gray-800 space-y-4 shadow-2xl">
+      <div>
+        <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">TAG / Patrimônio da Máquina</label>
+        <input type="text" id="id" placeholder="Ex: M-202, EMP-01" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-cyan-500 font-mono">
+      </div>
+      <div>
+        <label class="text-[9px] font-black text-gray-500 uppercase block mb-1">Nome / Descrição do Equipamento</label>
+        <input type="text" id="nome" placeholder="Ex: Empilhadeira Toyota 2.5T" required class="w-full px-4 py-3 bg-[#0B0F1A] border border-gray-700 rounded-xl text-white outline-none focus:ring-1 focus:ring-cyan-500">
+      </div>
+      <button type="submit" class="w-full bg-cyan-600 text-black font-black py-4 rounded-xl uppercase text-[10px] tracking-widest hover:bg-cyan-500 transition-all mt-4">Cadastrar Equipamento</button>
+    </form>
+  </main>
+
+  <script type="module">
+    import { db } from './database.js';
+    import { UI } from './ui.js';
+    lucide.createIcons();
+    
+    document.getElementById('formMaq').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const res = db.adicionarRegistro('maquinas', {
+        id: document.getElementById('id').value.trim().toUpperCase(),
+        nome: document.getElementById('nome').value.trim()
+      });
+      UI.notificar(res.message, res.status);
+      if(res.status === "success") setTimeout(() => window.location.href='cad-maquinas.html', 1500);
+    });
+  </script>
+</body>
+</html>
