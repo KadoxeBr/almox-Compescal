@@ -15,17 +15,17 @@
 </head>
 <body class="bg-[#0B0F1A] text-gray-200 min-h-screen font-sans flex flex-col">
 
-  <nav class="bg-[#161B28] p-4 border-b border-gray-800 flex items-center shadow-2xl sticky top-0 z-50">
+  <nav class="bg-[#161B28] p-3 md:p-4 border-b border-gray-800 flex items-center shadow-2xl sticky top-0 z-50 px-4 md:px-8">
     <button onclick="window.location.href='saida-listagem.html'" class="text-gray-400 hover:text-white flex items-center gap-2">
-      <i data-lucide="arrow-left" class="w-5 h-5"></i> 
-      <span class="text-[10px] uppercase font-black tracking-widest hide-mobile">Voltar</span>
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      <span class="text-[9px] md:text-[10px] uppercase font-black tracking-widest hidden md:inline">Voltar</span>
     </button>
-    <h1 class="ml-4 font-black text-[10px] uppercase tracking-[0.2em] text-orange-500">Requisição de Materiais</h1>
+    <h1 class="ml-4 font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-orange-500">Requisição</h1>
   </nav>
 
   <main class="p-4 md:p-8 max-w-4xl mx-auto w-full">
     <header class="mb-6 text-center md:text-left">
-      <h2 class="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase leading-none">Baixa de Estoque</h2>
+     
       <p class="text-gray-500 text-[9px] uppercase tracking-[0.3em] font-bold mt-2">Saída de Insumos e Equipamentos</p>
     </header>
 
@@ -42,48 +42,48 @@
         <input type="hidden" id="idProd" required>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#0B0F1A]/50 p-4 rounded-3xl border border-gray-800/50">
-        <div class="md:col-span-1">
-            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1 ml-2">Quantidade</label>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 bg-[#0B0F1A]/50 p-3 md:p-4 rounded-3xl border border-gray-800/50">
+        <div class="sm:col-span-1">
+            <label class="text-[8px] md:text-[9px] font-black text-gray-500 uppercase block mb-1">Qtd</label>
             <input type="number" id="qtd" step="0.01" required placeholder="0.00"
-                   class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white font-mono text-lg outline-none focus:ring-1 focus:ring-orange-500">
+                   class="w-full px-3 md:px-4 py-3 md:py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white font-mono text-base md:text-lg outline-none focus:ring-1 focus:ring-orange-500">
         </div>
-        <div class="md:col-span-1">
-            <label class="text-[9px] font-black text-gray-500 uppercase block mb-1 ml-2">Unidade</label>
-            <input type="text" id="un" disabled class="w-full px-4 py-4 bg-gray-900 border border-gray-800 rounded-2xl text-center text-xs text-gray-500 font-bold uppercase" value="---">
+        <div class="sm:col-span-1">
+            <label class="text-[8px] md:text-[9px] font-black text-gray-500 uppercase block mb-1">Unid</label>
+            <input type="text" id="un" disabled class="w-full px-3 md:px-4 py-3 md:py-4 bg-gray-900 border border-gray-800 rounded-2xl text-center text-xs text-gray-500 font-bold uppercase" value="---">
         </div>
-        <div class="md:col-span-1">
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-1 ml-2">Saldo em Estoque</label>
-          <input type="text" id="saldo" disabled class="w-full px-4 py-4 bg-gray-900 border border-gray-800 rounded-2xl text-orange-500 font-black text-center text-xl font-mono" value="0.00">
+        <div class="sm:col-span-1">
+          <label class="text-[8px] md:text-[9px] font-black text-gray-500 uppercase block mb-1">Saldo</label>
+          <input type="text" id="saldo" disabled class="w-full px-3 md:px-4 py-3 md:py-4 bg-gray-900 border border-gray-800 rounded-2xl text-orange-500 font-black text-center text-lg md:text-xl font-mono" value="0.00">
         </div>
       </div>
 
       <div class="h-[1px] bg-gray-800"></div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Funcionário / Requisitante</label>
-          <select id="selectFunc" required class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500"></select>
+          <label class="text-[8px] md:text-[9px] font-black text-gray-500 uppercase block mb-2">Funcionário</label>
+          <select id="selectFunc" required class="w-full px-3 md:px-4 py-3 md:py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500 text-sm md:text-base"></select>
         </div>
         <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Setor de Destino</label>
-          <select id="selectSetor" required class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500"></select>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Centro de Custo</label>
-          <select id="selectCC" required class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500"></select>
-        </div>
-        <div>
-          <label class="text-[9px] font-black text-gray-500 uppercase block mb-2 ml-2 tracking-widest">Equipamento / Máquina (Opcional)</label>
-          <select id="selectMaq" class="w-full px-4 py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none border-dashed"></select>
+          <label class="text-[8px] md:text-[9px] font-black text-gray-500 uppercase block mb-2">Setor</label>
+          <select id="selectSetor" required class="w-full px-3 md:px-4 py-3 md:py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500 text-sm md:text-base"></select>
         </div>
       </div>
 
-      <button type="submit" class="w-full bg-orange-600 text-white font-black py-5 rounded-2xl uppercase text-[10px] tracking-[0.3em] active:scale-95 transition-all shadow-lg shadow-orange-900/20 mt-4">
-        Efetivar Baixa no Estoque
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+        <div>
+          <label class="text-[8px] md:text-[9px] font-black text-gray-500 uppercase block mb-2">Centro de Custo</label>
+          <select id="selectCC" required class="w-full px-3 md:px-4 py-3 md:py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none focus:ring-1 focus:ring-orange-500 text-sm md:text-base"></select>
+        </div>
+        <div>
+          <label class="text-[8px] md:text-[9px] font-black text-gray-500 uppercase block mb-2">Equipamento (Opcional)</label>
+          <select id="selectMaq" class="w-full px-3 md:px-4 py-3 md:py-4 bg-[#0B0F1A] border border-gray-700 rounded-2xl text-white outline-none appearance-none border-dashed text-sm md:text-base"></select>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-orange-600 text-white font-black py-4 md:py-5 rounded-2xl uppercase text-[9px] md:text-[10px] tracking-[0.3em] active:scale-95 transition-all shadow-lg shadow-orange-900/20 mt-4">
+        Efetivar Saída
       </button>
     </form>
   </main>

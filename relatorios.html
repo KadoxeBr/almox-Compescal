@@ -2,54 +2,55 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Relatórios | COMPESCAL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-[#0B0F1A] text-gray-200 min-h-screen">
-  <nav class="bg-[#161B28] p-3 flex items-center px-8 border-b border-gray-800 shadow-2xl">
+  <nav class="bg-[#161B28] p-3 flex items-center px-4 md:px-8 border-b border-gray-800 shadow-2xl">
     <button onclick="window.location.href='index.html'" class="mr-4 text-gray-400 hover:text-white transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
-    <h1 class="font-bold text-[10px] uppercase tracking-widest text-green-500">Relatórios de Movimentação</h1>
+    <h1 class="font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-green-500">Relatórios</h1>
   </nav>
 
-  <main class="p-6 max-w-7xl mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+  <main class="p-4 md:p-6 max-w-7xl mx-auto w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
+      <div class="bg-[#161B28] p-4 md:p-6 rounded-2xl border border-gray-800 shadow-xl">
         <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Movimentação por Tipo</h2>
-        <canvas id="chartTipo" class="max-h-72"></canvas>
+        <canvas id="chartTipo" class="max-h-64 md:max-h-72"></canvas>
       </div>
 
-      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+      <div class="bg-[#161B28] p-4 md:p-6 rounded-2xl border border-gray-800 shadow-xl">
         <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Movimentação por Dia</h2>
-        <canvas id="chartDia" class="max-h-72"></canvas>
+        <canvas id="chartDia" class="max-h-64 md:max-h-72"></canvas>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
-        <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Top Produtos Mais Movimentados</h2>
-        <div id="topProdutos" class="space-y-3">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
+      <div class="bg-[#161B28] p-4 md:p-6 rounded-2xl border border-gray-800 shadow-xl">
+        <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Top Produtos</h2>
+        <div id="topProdutos" class="space-y-2 md:space-y-3">
           <p class="text-gray-500 text-center py-4">Carregando...</p>
         </div>
       </div>
 
-      <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+      <div class="bg-[#161B28] p-4 md:p-6 rounded-2xl border border-gray-800 shadow-xl">
         <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Movimentação por Setor</h2>
-        <canvas id="chartSetor" class="max-h-72"></canvas>
+        <canvas id="chartSetor" class="max-h-64 md:max-h-72"></canvas>
       </div>
     </div>
 
-    <div class="bg-[#161B28] p-6 rounded-2xl border border-gray-800 shadow-xl">
+    <div class="bg-[#161B28] p-4 md:p-6 rounded-2xl border border-gray-800 shadow-xl">
       <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Resumo de Operações</h2>
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
+        <table class="w-full text-xs md:text-sm">
+          <thead class="hidden md:table-header-group">
             <tr class="border-b border-gray-700">
-              <th class="text-left py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Período</th>
-              <th class="text-center py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Entradas</th>
-              <th class="text-center py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Saídas</th>
-              <th class="text-center py-3 px-4 text-[9px] font-black text-gray-500 uppercase tracking-wider">Total</th>
+              <th class="text-left py-3 px-2 md:px-4 text-[8px] md:text-[9px] font-black text-gray-500 uppercase tracking-wider">Período</th>
+              <th class="text-center py-3 px-2 md:px-4 text-[8px] md:text-[9px] font-black text-gray-500 uppercase tracking-wider">Entradas</th>
+              <th class="text-center py-3 px-2 md:px-4 text-[8px] md:text-[9px] font-black text-gray-500 uppercase tracking-wider">Saídas</th>
+              <th class="text-center py-3 px-2 md:px-4 text-[8px] md:text-[9px] font-black text-gray-500 uppercase tracking-wider">Total</th>
             </tr>
           </thead>
           <tbody id="tabelaResumo">
